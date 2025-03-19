@@ -8,7 +8,7 @@ Arahkan ke folder hasil clone repository dan buka.
 
 3.Konfigurasi Database:
 Buat database baru di MySQL dengan nama aplikasi_rumah.
-Import skema database dari file BAN.sql yang terdapat di dalam folder SQL.
+Import skema database dari file aplikasi_rumah.sql yang terdapat di dalam folder SQL Database.
 Sesuaikan konfigurasi koneksi database di file src/stokban/DatabaseConnection.java.
 
 4.Jalankan Aplikasi:
