@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 19, 2025 at 02:59 PM
+-- Generation Time: Mar 21, 2025 at 09:48 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -43,7 +43,8 @@ CREATE TABLE `client` (
 --
 
 INSERT INTO `client` (`id`, `nik`, `nama`, `nokk`, `alamat`, `npwp`, `asuransi`, `gaji`) VALUES
-(1, '8892882', 'John Does', '321729', 'jakarta', '01292092', 'jiwaseraya', 1090911);
+(1, '8892882', 'John Does', '321729', 'jakarta', '01292092', 'jiwaseraya', 1090911),
+(2, '4444', 'beru', '5555', 'jakarta', '090909', 'jiwaseraya', 99999);
 
 -- --------------------------------------------------------
 
@@ -85,7 +86,9 @@ CREATE TABLE `karyawan` (
 INSERT INTO `karyawan` (`id`, `nama`, `jabatan`) VALUES
 (1, 'Bambang sutrisna', ': Tukang Ketik Enginner'),
 (2, 'Cryl', 'UI'),
-(3, 'Roy natanael', 'Full Stack dev');
+(3, 'Roy natanael', 'Full Stack dev'),
+(4, 'Adit', 'Network Engineer'),
+(5, 'Abiyu Sofyan', 'Full Stack Mobile Dev');
 
 -- --------------------------------------------------------
 
@@ -133,7 +136,8 @@ CREATE TABLE `tipe_rumah` (
 --
 
 INSERT INTO `tipe_rumah` (`id`, `tipe`, `harga_pokok`, `luas_bangunan`, `luas_tanah`, `kamar_tidur`, `deskripsi`, `kamar_mandi`, `lantai`, `listrik`, `sumber_air`, `harga_rumah`) VALUES
-(1, 'Modern', 981911, 400, 600, 8, 'Rumah ini di buat dengan desain modern ', 8, 3, '1000', '1000', 9811999222);
+(1, 'Modern', 981911, 400, 600, 8, 'Rumah ini di buat dengan desain modern ', 8, 3, '1000', '1000', 9811999222),
+(2, 'classic', 11, 22, 33, 4, 'wowow', 5, 3, '1111', 'PDAM', 54231);
 
 --
 -- Indexes for dumped tables
@@ -177,7 +181,7 @@ ALTER TABLE `tipe_rumah`
 -- AUTO_INCREMENT for table `client`
 --
 ALTER TABLE `client`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `jabatan`
@@ -189,7 +193,7 @@ ALTER TABLE `jabatan`
 -- AUTO_INCREMENT for table `karyawan`
 --
 ALTER TABLE `karyawan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `rab`
@@ -201,7 +205,7 @@ ALTER TABLE `rab`
 -- AUTO_INCREMENT for table `tipe_rumah`
 --
 ALTER TABLE `tipe_rumah`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
