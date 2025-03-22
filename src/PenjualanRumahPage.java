@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Date;
 
 public class PenjualanRumahPage extends JFrame {
     private JTextField[] clientFields; // Array untuk menyimpan field client
@@ -61,7 +63,21 @@ public class PenjualanRumahPage extends JFrame {
         simpanButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(PenjualanRumahPage.this, "Data penjualan rumah berhasil disimpan!");
+                // Tampilkan alert konfirmasi
+                int option = JOptionPane.showOptionDialog(
+                        PenjualanRumahPage.this,
+                        "Harap periksa kembali data yang Anda masukkan sebelum melanjutkan.",
+                        "Konfirmasi",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new String[]{"Cek Kembali", "Simpan"}, // Tombol custom
+                        "Cek Kembali"
+                );
+
+                if (option == JOptionPane.NO_OPTION) { // Jika memilih "Simpan"
+                    simpanDataTransaksi(); // Simpan data ke database
+                }
             }
         });
 
@@ -135,110 +151,107 @@ public class PenjualanRumahPage extends JFrame {
 
     // Method untuk mencari data Client dari database
     private void searchClientData(String fieldName, JTextField textField) {
-        String searchKey = JOptionPane.showInputDialog(this, "Masukkan " + fieldName + " untuk dicari:");
-        if (searchKey != null && !searchKey.isEmpty()) {
-            try (Connection connection = DatabaseConnection.getConnection()) {
-                String query = "SELECT * FROM client WHERE " + fieldName + " = ?";
-                PreparedStatement preparedStatement = connection.prepareStatement(query);
-                preparedStatement.setString(1, searchKey);
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                if (resultSet.next()) {
-                    // Isi semua field client dengan data dari database
-                    clientFields[0].setText(resultSet.getString("nik"));
-                    clientFields[1].setText(resultSet.getString("nama"));
-                    clientFields[2].setText(resultSet.getString("nokk"));
-                    clientFields[3].setText(resultSet.getString("npwp"));
-                    clientFields[4].setText(resultSet.getString("asuransi"));
-                    clientFields[5].setText(String.valueOf(resultSet.getDouble("gaji")));
-                    clientFields[6].setText(resultSet.getString("alamat"));
-                } else {
-                    JOptionPane.showMessageDialog(this, "Data tidak ditemukan.");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    // Method untuk mencari data Tipe Rumah dari database
-   private void searchTipeRumahData(String fieldName, JTextField textField) {
-    // Mapping antara label di UI dan nama kolom di database
-    String columnName;
-    switch (fieldName) {
-        case "ID Tipe Rumah":
-            columnName = "id";
-            break;
-        case "Tipe":
-            columnName = "tipe";
-            break;
-        case "Harga Pokok":
-            columnName = "harga_pokok";
-            break;
-        case "Luas Bangunan":
-            columnName = "luas_bangunan";
-            break;
-        case "Luas Tanah":
-            columnName = "luas_tanah";
-            break;
-        case "Kamar Tidur":
-            columnName = "kamar_tidur";
-            break;
-        case "Deskripsi":
-            columnName = "deskripsi";
-            break;
-        case "Kamar Mandi":
-            columnName = "kamar_mandi";
-            break;
-        case "Lantai":
-            columnName = "lantai";
-            break;
-        case "Listrik":
-            columnName = "listrik";
-            break;
-        case "Sumber Air":
-            columnName = "sumber_air";
-            break;
-        case "Harga Rumah":
-            columnName = "harga_rumah";
-            break;
-        default:
-            JOptionPane.showMessageDialog(this, "Kolom tidak valid: " + fieldName);
-            return;
-    }
-
     String searchKey = JOptionPane.showInputDialog(this, "Masukkan " + fieldName + " untuk dicari:");
     if (searchKey != null && !searchKey.isEmpty()) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            // Gunakan nama kolom yang sesuai dengan database
-            String query = "SELECT * FROM tipe_rumah WHERE `" + columnName + "` = ?";
+            String query = "SELECT * FROM client WHERE " + fieldName + " = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, searchKey);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                // Isi semua field di form Tipe Rumah dengan data dari database
-                tipeRumahFields[0].setText(String.valueOf(resultSet.getInt("id"))); // ID Tipe Rumah (kolom "id" di database)
-                tipeRumahFields[1].setText(resultSet.getString("tipe"));
-                tipeRumahFields[2].setText(String.valueOf(resultSet.getDouble("harga_pokok")));
-                tipeRumahFields[3].setText(String.valueOf(resultSet.getDouble("luas_bangunan")));
-                tipeRumahFields[4].setText(String.valueOf(resultSet.getDouble("luas_tanah")));
-                tipeRumahFields[5].setText(String.valueOf(resultSet.getInt("kamar_tidur")));
-                tipeRumahFields[6].setText(resultSet.getString("deskripsi"));
-                tipeRumahFields[7].setText(String.valueOf(resultSet.getInt("kamar_mandi")));
-                tipeRumahFields[8].setText(String.valueOf(resultSet.getInt("lantai")));
-                tipeRumahFields[9].setText(resultSet.getString("listrik"));
-                tipeRumahFields[10].setText(resultSet.getString("sumber_air"));
-                tipeRumahFields[11].setText(String.valueOf(resultSet.getDouble("harga_rumah")));
+                // Simpan ID client ke hidden field atau variabel
+                String clientId = resultSet.getString("id");
+                clientFields[0].setText(clientId); // Simpan ID ke field yang sesuai
+                clientFields[1].setText(resultSet.getString("nama"));
+                // ... isi field lainnya ...
             } else {
                 JOptionPane.showMessageDialog(this, "Data tidak ditemukan.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat mencari data: " + e.getMessage());
         }
     }
 }
+
+    // Method untuk mencari data Tipe Rumah dari database
+    private void searchTipeRumahData(String fieldName, JTextField textField) {
+        // Mapping antara label di UI dan nama kolom di database
+        String columnName;
+        switch (fieldName) {
+            case "ID Tipe Rumah":
+                columnName = "id";
+                break;
+            case "Tipe":
+                columnName = "tipe";
+                break;
+            case "Harga Pokok":
+                columnName = "harga_pokok";
+                break;
+            case "Luas Bangunan":
+                columnName = "luas_bangunan";
+                break;
+            case "Luas Tanah":
+                columnName = "luas_tanah";
+                break;
+            case "Kamar Tidur":
+                columnName = "kamar_tidur";
+                break;
+            case "Deskripsi":
+                columnName = "deskripsi";
+                break;
+            case "Kamar Mandi":
+                columnName = "kamar_mandi";
+                break;
+            case "Lantai":
+                columnName = "lantai";
+                break;
+            case "Listrik":
+                columnName = "listrik";
+                break;
+            case "Sumber Air":
+                columnName = "sumber_air";
+                break;
+            case "Harga Rumah":
+                columnName = "harga_rumah";
+                break;
+            default:
+                JOptionPane.showMessageDialog(this, "Kolom tidak valid: " + fieldName);
+                return;
+        }
+
+        String searchKey = JOptionPane.showInputDialog(this, "Masukkan " + fieldName + " untuk dicari:");
+        if (searchKey != null && !searchKey.isEmpty()) {
+            try (Connection connection = DatabaseConnection.getConnection()) {
+                // Gunakan nama kolom yang sesuai dengan database
+                String query = "SELECT * FROM tipe_rumah WHERE `" + columnName + "` = ?";
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, searchKey);
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                if (resultSet.next()) {
+                    // Isi semua field di form Tipe Rumah dengan data dari database
+                    tipeRumahFields[0].setText(String.valueOf(resultSet.getInt("id"))); // ID Tipe Rumah (kolom "id" di database)
+                    tipeRumahFields[1].setText(resultSet.getString("tipe"));
+                    tipeRumahFields[2].setText(String.valueOf(resultSet.getDouble("harga_pokok")));
+                    tipeRumahFields[3].setText(String.valueOf(resultSet.getDouble("luas_bangunan")));
+                    tipeRumahFields[4].setText(String.valueOf(resultSet.getDouble("luas_tanah")));
+                    tipeRumahFields[5].setText(String.valueOf(resultSet.getInt("kamar_tidur")));
+                    tipeRumahFields[6].setText(resultSet.getString("deskripsi"));
+                    tipeRumahFields[7].setText(String.valueOf(resultSet.getInt("kamar_mandi")));
+                    tipeRumahFields[8].setText(String.valueOf(resultSet.getInt("lantai")));
+                    tipeRumahFields[9].setText(resultSet.getString("listrik"));
+                    tipeRumahFields[10].setText(resultSet.getString("sumber_air"));
+                    tipeRumahFields[11].setText(String.valueOf(resultSet.getDouble("harga_rumah")));
+                } else {
+                    JOptionPane.showMessageDialog(this, "Data tidak ditemukan.");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat mencari data: " + e.getMessage());
+            }
+        }
+    }
 
     // Method untuk mencari data Karyawan dari database
     private void searchKaryawanData(String fieldName, JTextField textField) {
@@ -262,6 +275,40 @@ public class PenjualanRumahPage extends JFrame {
             }
         }
     }
+
+    // Method untuk menyimpan data transaksi ke database
+  private void simpanDataTransaksi() {
+    // Ambil data dari form
+    String clientId = clientFields[0].getText(); // Pastikan ini adalah ID client (bukan NIK)
+    String tipeRumahId = tipeRumahFields[0].getText(); // ID Tipe Rumah
+    String karyawanId = karyawanFields[0].getText(); // ID Karyawan
+    double hargaRumah = Double.parseDouble(tipeRumahFields[11].getText()); // Harga Rumah
+
+    // Timestamp otomatis
+    Timestamp timestamp = new Timestamp(new Date().getTime());
+
+    try (Connection connection = DatabaseConnection.getConnection()) {
+        // Query untuk menyimpan data transaksi
+        String query = "INSERT INTO transaksi (timestamp, client_id, tipe_rumah_id, karyawan_id, harga_rumah) VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setTimestamp(1, timestamp);
+        preparedStatement.setInt(2, Integer.parseInt(clientId)); // client_id adalah INT
+        preparedStatement.setInt(3, Integer.parseInt(tipeRumahId)); // tipe_rumah_id adalah INT
+        preparedStatement.setInt(4, Integer.parseInt(karyawanId)); // karyawan_id adalah INT
+        preparedStatement.setDouble(5, hargaRumah);
+
+        // Eksekusi query
+        int rowsAffected = preparedStatement.executeUpdate();
+        if (rowsAffected > 0) {
+            JOptionPane.showMessageDialog(this, "Data transaksi berhasil disimpan!");
+        } else {
+            JOptionPane.showMessageDialog(this, "Gagal menyimpan data transaksi.");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menyimpan data: " + e.getMessage());
+    }
+}
 
     public static void main(String[] args) {
         new PenjualanRumahPage();

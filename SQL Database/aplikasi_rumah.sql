@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 21, 2025 at 09:48 AM
+-- Generation Time: Mar 22, 2025 at 10:30 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -44,7 +44,8 @@ CREATE TABLE `client` (
 
 INSERT INTO `client` (`id`, `nik`, `nama`, `nokk`, `alamat`, `npwp`, `asuransi`, `gaji`) VALUES
 (1, '8892882', 'John Does', '321729', 'jakarta', '01292092', 'jiwaseraya', 1090911),
-(2, '4444', 'beru', '5555', 'jakarta', '090909', 'jiwaseraya', 99999);
+(2, '4444', 'beru', '5555', 'jakarta', '090909', 'jiwaseraya', 99999),
+(3, '12345', 'abi', '54321', 'Bandoeng', '898981', 'Prudentials', 1890000);
 
 -- --------------------------------------------------------
 
@@ -64,8 +65,10 @@ CREATE TABLE `jabatan` (
 --
 
 INSERT INTO `jabatan` (`id`, `jabatan`, `gaji_pokok`, `bonus`) VALUES
-(1, 'tukang Ketik Engineer', 1000000, 109900),
-(2, 'UI', 999999, 11111);
+(1, 'Tukang Ketik Enginner', 1000000, 109900),
+(2, 'UI', 999999, 11111),
+(3, 'Full stack dev', 111111, 9999),
+(4, 'Network Engineer', 500000, 200000);
 
 -- --------------------------------------------------------
 
@@ -139,6 +142,29 @@ INSERT INTO `tipe_rumah` (`id`, `tipe`, `harga_pokok`, `luas_bangunan`, `luas_ta
 (1, 'Modern', 981911, 400, 600, 8, 'Rumah ini di buat dengan desain modern ', 8, 3, '1000', '1000', 9811999222),
 (2, 'classic', 11, 22, 33, 4, 'wowow', 5, 3, '1111', 'PDAM', 54231);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `transaksi`
+--
+
+CREATE TABLE `transaksi` (
+  `id` int(11) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `client_id` int(11) NOT NULL,
+  `tipe_rumah_id` int(11) NOT NULL,
+  `karyawan_id` int(11) NOT NULL,
+  `harga_rumah` double DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `transaksi`
+--
+
+INSERT INTO `transaksi` (`id`, `timestamp`, `client_id`, `tipe_rumah_id`, `karyawan_id`, `harga_rumah`) VALUES
+(5, '2025-03-22 04:18:12', 2, 1, 3, 9811999222),
+(6, '2025-03-22 04:25:07', 3, 2, 5, 54231);
+
 --
 -- Indexes for dumped tables
 --
@@ -174,6 +200,15 @@ ALTER TABLE `tipe_rumah`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `transaksi`
+--
+ALTER TABLE `transaksi`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `client_id` (`client_id`),
+  ADD KEY `tipe_rumah_id` (`tipe_rumah_id`),
+  ADD KEY `karyawan_id` (`karyawan_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -181,13 +216,13 @@ ALTER TABLE `tipe_rumah`
 -- AUTO_INCREMENT for table `client`
 --
 ALTER TABLE `client`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `jabatan`
 --
 ALTER TABLE `jabatan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `karyawan`
@@ -206,6 +241,24 @@ ALTER TABLE `rab`
 --
 ALTER TABLE `tipe_rumah`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `transaksi`
+--
+ALTER TABLE `transaksi`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `transaksi`
+--
+ALTER TABLE `transaksi`
+  ADD CONSTRAINT `transaksi_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `client` (`id`),
+  ADD CONSTRAINT `transaksi_ibfk_2` FOREIGN KEY (`tipe_rumah_id`) REFERENCES `tipe_rumah` (`id`),
+  ADD CONSTRAINT `transaksi_ibfk_3` FOREIGN KEY (`karyawan_id`) REFERENCES `karyawan` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

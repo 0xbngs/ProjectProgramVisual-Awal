@@ -107,7 +107,7 @@ public class AdminPage extends JFrame {
         laporanButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(AdminPage.this, "Fitur Laporan belum tersedia.");
+                new LaporanPage(); // Buka Halaman Laporan
             }
         });
 
