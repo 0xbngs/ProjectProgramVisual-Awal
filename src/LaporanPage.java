@@ -11,6 +11,7 @@ import java.sql.SQLException;
 
 public class LaporanPage extends JFrame {
     private JTabbedPane tabbedPane;
+    private JTable tipeRumahTable;
 
     public LaporanPage() {
         setTitle("Laporan");
@@ -151,39 +152,42 @@ public class LaporanPage extends JFrame {
     }
 
     // Method untuk membuat panel Tipe Rumah yang Terjual
-    private JPanel createTipeRumahTerjualPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Margin
-        panel.setBackground(new Color(240, 240, 240)); // Warna background lembut
+   private JPanel createTipeRumahTerjualPanel() {
+    JPanel panel = new JPanel(new BorderLayout());
+    panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Margin
+    panel.setBackground(new Color(240, 240, 240)); // Warna background lembut
 
-        // Tabel Data Tipe Rumah yang Terjual
-        String[] columnNames = {"Tipe Rumah", "Jumlah Terjual", "Total Pendapatan"};
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
-        JTable tipeRumahTable = new JTable(tableModel);
-        JScrollPane scrollPane = new JScrollPane(tipeRumahTable);
-        panel.add(scrollPane, BorderLayout.CENTER);
+    // Tabel Data Tipe Rumah yang Terjual
+    String[] columnNames = {"Tipe Rumah", "Jumlah Terjual", "Total Pendapatan"};
+    DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+    tipeRumahTable = new JTable(tableModel); // Gunakan variabel instance yang sudah dideklarasikan
+    JScrollPane scrollPane = new JScrollPane(tipeRumahTable);
+    panel.add(scrollPane, BorderLayout.CENTER);
 
-        // Tombol Load Data
-        JButton loadButton = new JButton("Load Data");
-        loadButton.setFont(new Font("Arial", Font.BOLD, 14));
-        loadButton.setBackground(new Color(59, 89, 182)); // Warna background
-        loadButton.setForeground(Color.WHITE); // Warna teks
-        loadButton.setFocusPainted(false); // Hilangkan border fokus
-        loadButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                loadTipeRumahTerjualData(tableModel);
-            }
-        });
+    // Tombol Load Data
+    JButton loadButton = new JButton("Load Data");
+    loadButton.setFont(new Font("Arial", Font.BOLD, 14));
+    loadButton.setBackground(new Color(59, 89, 182)); // Warna background
+    loadButton.setForeground(Color.WHITE); // Warna teks
+    loadButton.setFocusPainted(false); // Hilangkan border fokus
+    loadButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            refreshTipeRumahTerjualData(); // Panggil method refresh
+        }
+    });
 
-        // Panel untuk tombol
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.setBackground(new Color(240, 240, 240));
-        buttonPanel.add(loadButton);
-        panel.add(buttonPanel, BorderLayout.SOUTH);
+    // Panel untuk tombol
+    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    buttonPanel.setBackground(new Color(240, 240, 240));
+    buttonPanel.add(loadButton);
+    panel.add(buttonPanel, BorderLayout.SOUTH);
 
-        return panel;
-    }
+    // Load data saat pertama kali tab dibuka
+    refreshTipeRumahTerjualData();
+
+    return panel;
+}
 
     // Method untuk membuat panel Keuntungan Kotor
     private JPanel createKeuntunganKotorPanel() {
@@ -301,6 +305,70 @@ public class LaporanPage extends JFrame {
             JOptionPane.ERROR_MESSAGE);
     }
 }
+    private void simpanDataTransaksi() {
+    // Ambil data dari form
+    String clientId = clientFields[0].getText(); // Pastikan ini adalah ID client (bukan NIK)
+    String tipeRumahId = tipeRumahFields[0].getText(); // ID Tipe Rumah
+    String karyawanId = karyawanFields[0].getText(); // ID Karyawan
+    double hargaRumah = Double.parseDouble(tipeRumahFields[11].getText()); // Harga Rumah
+
+    // Timestamp otomatis
+    Timestamp timestamp = new Timestamp(new Date().getTime());
+
+    try (Connection connection = DatabaseConnection.getConnection()) {
+        // Query untuk menyimpan data transaksi
+        String query = "INSERT INTO transaksi (timestamp, client_id, tipe_rumah_id, karyawan_id, harga_rumah) VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setTimestamp(1, timestamp);
+        preparedStatement.setInt(2, Integer.parseInt(clientId)); // client_id adalah INT
+        preparedStatement.setInt(3, Integer.parseInt(tipeRumahId)); // tipe_rumah_id adalah INT
+        preparedStatement.setInt(4, Integer.parseInt(karyawanId)); // karyawan_id adalah INT
+        preparedStatement.setDouble(5, hargaRumah);
+
+        // Eksekusi query
+        int rowsAffected = preparedStatement.executeUpdate();
+        if (rowsAffected > 0) {
+            JOptionPane.showMessageDialog(this, "Data transaksi berhasil disimpan!");
+
+            // Panggil method untuk memperbarui data di LaporanPage
+            LaporanPage laporanPage = new LaporanPage(); // Buat instance LaporanPage
+            laporanPage.refreshTipeRumahTerjualData(); // Panggil method refresh
+        } else {
+            JOptionPane.showMessageDialog(this, "Gagal menyimpan data transaksi.");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menyimpan data: " + e.getMessage());
+    }
+}
+    private void refreshTipeRumahTerjualData() {
+    DefaultTableModel tableModel = (DefaultTableModel) tipeRumahTable.getModel();
+    tableModel.setRowCount(0); // Clear existing data
+
+    try (Connection connection = DatabaseConnection.getConnection()) {
+        // Query untuk mengambil data tipe rumah yang terjual
+        String query = "SELECT tr.tipe, COUNT(t.id) AS jumlah_terjual, SUM(t.harga_rumah) AS total_pendapatan " +
+                       "FROM transaksi t " +
+                       "JOIN tipe_rumah tr ON t.tipe_rumah_id = tr.id " +
+                       "GROUP BY tr.tipe";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        // Tambahkan data ke tabel
+        while (resultSet.next()) {
+            String tipeRumah = resultSet.getString("tipe");
+            int jumlahTerjual = resultSet.getInt("jumlah_terjual");
+            double totalPendapatan = resultSet.getDouble("total_pendapatan");
+
+            tableModel.addRow(new Object[]{tipeRumah, jumlahTerjual, totalPendapatan});
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat memuat data: " + e.getMessage());
+    }
+}
+    
 
     // Method untuk memuat data tipe rumah yang terjual
     private void loadTipeRumahTerjualData(DefaultTableModel tableModel) {

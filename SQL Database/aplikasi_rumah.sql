@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 22, 2025 at 10:30 AM
+-- Generation Time: Mar 23, 2025 at 07:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -68,7 +68,9 @@ INSERT INTO `jabatan` (`id`, `jabatan`, `gaji_pokok`, `bonus`) VALUES
 (1, 'Tukang Ketik Enginner', 1000000, 109900),
 (2, 'UI', 999999, 11111),
 (3, 'Full stack dev', 111111, 9999),
-(4, 'Network Engineer', 500000, 200000);
+(4, 'Network Engineer', 500000, 200000),
+(5, 'sales', 800000, 200000),
+(6, 'Cysec', 40000, 10000);
 
 -- --------------------------------------------------------
 
@@ -87,11 +89,12 @@ CREATE TABLE `karyawan` (
 --
 
 INSERT INTO `karyawan` (`id`, `nama`, `jabatan`) VALUES
-(1, 'Bambang sutrisna', ': Tukang Ketik Enginner'),
+(1, 'Bambang Sutrisna', 'Cysec'),
 (2, 'Cryl', 'UI'),
 (3, 'Roy natanael', 'Full Stack dev'),
 (4, 'Adit', 'Network Engineer'),
-(5, 'Abiyu Sofyan', 'Full Stack Mobile Dev');
+(5, 'Abiyu Sofyan', 'Full Stack Mobile Dev'),
+(6, 'mubina', 'sales');
 
 -- --------------------------------------------------------
 
@@ -163,7 +166,14 @@ CREATE TABLE `transaksi` (
 
 INSERT INTO `transaksi` (`id`, `timestamp`, `client_id`, `tipe_rumah_id`, `karyawan_id`, `harga_rumah`) VALUES
 (5, '2025-03-22 04:18:12', 2, 1, 3, 9811999222),
-(6, '2025-03-22 04:25:07', 3, 2, 5, 54231);
+(6, '2025-03-22 04:25:07', 3, 2, 5, 54231),
+(7, '2025-03-22 11:37:04', 1, 2, 1, 54231),
+(8, '2025-03-22 11:45:26', 2, 2, 6, 54231),
+(9, '2025-03-22 11:46:19', 2, 1, 1, 9811999222),
+(10, '2025-03-22 11:47:05', 2, 1, 1, 9811999222),
+(11, '2025-03-22 11:50:35', 2, 2, 1, 54231),
+(12, '2025-03-22 14:13:35', 2, 1, 1, 9811999222),
+(13, '2025-03-22 14:14:43', 2, 1, 1, 9811999222);
 
 --
 -- Indexes for dumped tables
@@ -222,13 +232,13 @@ ALTER TABLE `client`
 -- AUTO_INCREMENT for table `jabatan`
 --
 ALTER TABLE `jabatan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `karyawan`
 --
 ALTER TABLE `karyawan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `rab`
@@ -246,7 +256,7 @@ ALTER TABLE `tipe_rumah`
 -- AUTO_INCREMENT for table `transaksi`
 --
 ALTER TABLE `transaksi`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- Constraints for dumped tables
